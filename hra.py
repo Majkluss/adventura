@@ -9,13 +9,6 @@ class Hra:
             5: "Zničený most\n\nStojíš před zničeným mostem. Tady nic nenaděláš, leda bys chtěl přeskočit řeku."
         }
 
-        self.slovnik = {
-            "S": "SEVER",
-            "J": "JIH",
-            "V": "VÝCHOD",
-            "Z": "ZÁPAD"
-        }
-
         s = "SEVER"
         j = "JIH"
         v = "VÝCHOD"
@@ -23,18 +16,27 @@ class Hra:
 
         self.vychody = {
             0: {},
-            1: {z: 2, v:3, s:5, j:4},
-            2: {s:5, j:4},
-            3: {z:1},
-            4: {s:1, z:2, j:0},
-            5: {z:2, j:1}
+            1: {z: 2, v: 3, s: 5, j: 4},
+            2: {s: 5, j: 4, v: 1},
+            3: {z: 1},
+            4: {s: 1, z: 2, j: 0},
+            5: {z: 2, j: 1}
         }
         self.aktivni_lokace = 1
 
     def hra(self):
         """ Vypíše dostupné směry pro aktivní lokaci """
+
+        slovnik = {
+            "S": "SEVER",
+            "J": "JIH",
+            "V": "VÝCHOD",
+            "Z": "ZÁPAD"
+        }
+
         while True:
-            dostupne_vychody = ", ".join(self.vychody[self.aktivni_lokace].keys())
+            moznosti = self.vychody[self.aktivni_lokace]
+            dostupne_vychody = ", ".join(moznosti.keys())
 
             print(self.lokace[self.aktivni_lokace])
 
@@ -42,25 +44,26 @@ class Hra:
                 break
 
             smer = input("Můžeš jít na " + dostupne_vychody + " ").upper()
+            slova = smer.split()
             print("-"*40)
 
-            if smer == "EXIT":
-                print("S pláčem jsi utekl z lesního bludiště. Třeba se ti příště povede lépe!")
-                break
+            for slovo in slova:
+                if slovo in moznosti:
+                    self.aktivni_lokace = moznosti[slovo]
+                    break
 
-            if len(smer) > 1:
-                slova = smer.split()
-                for slovo in slova:
-                    if slovo in self.slovnik:
-                        smer = self.slovnik[slovo]
-                        break
+                elif len(slovo) == 1:
+                    for pismeno in slovnik:
+                        if smer == pismeno:
+                            self.aktivni_lokace = moznosti[slovnik[pismeno]]
+                            break
+                    break
 
-                # for slovo in self.slovnik:
-                #     if slovo in smer:
-                #         smer = self.slovnik[slovo]
-
-            if smer in self.vychody[self.aktivni_lokace]:
-                self.aktivni_lokace = self.vychody[self.aktivni_lokace][smer]
+                elif smer == "EXIT":
+                    print("S pláčem jsi utekl z lesního bludiště. Třeba se ti příště povede lépe!")
+                    break
             else:
                 print("!!! Tudy se nedá jít !!!")
-                print("-"*40)
+                print("-" * 40)
+
+
